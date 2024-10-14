@@ -4,8 +4,9 @@
 
 #include <string>
 #include <vector>
+#include "../Interface/IColumn.hpp"
 
-class Column {
+class Column: public IColumn {
     public:
         Column(int col_type);
         Column(int col_type, std::string col_name);
@@ -29,7 +30,7 @@ class Column {
         int getSize();
 
         std::string getName();
-        int getType();
+        int getType() {return column_type;};
         void print_values();
     private:
         std::string name;

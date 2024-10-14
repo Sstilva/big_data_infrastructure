@@ -2,11 +2,13 @@
 #ifndef TABLE_TABLE_HPP
 #define TABLE_TABLE_HPP
 
+#include "../Interface/ITable.hpp"
 #include <vector>
 #include <string>
 #include "../column/column.hpp"
 
-class Table {
+
+class Table: public ITable {
     public:
         Table();
         Table(std::string table_name, std::vector<std::string> column_names, std::vector<int> column_types);
@@ -17,7 +19,7 @@ class Table {
         std::vector<Column> columns;
 
         // Функции добавления строк
-        Table add_row(std::vector<void*> values);
+        void add_row(std::vector<void*> values);
 };
 
 #endif

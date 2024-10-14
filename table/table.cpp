@@ -23,7 +23,7 @@ Table::Table(){
 }
 
 
-Table Table::add_row(std::vector<void*> values){
+void Table::add_row(std::vector<void*> values){
     std::cout << "Получен запрос на добавление строки в таблицу!" << std::endl;
     int column_count = this->columns.size();
     std::cout << "Число колонок: " << column_count << std::endl;
@@ -50,5 +50,4 @@ Table Table::add_row(std::vector<void*> values){
         }
     }
 
-    return *this;
 }
