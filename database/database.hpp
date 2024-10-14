@@ -4,7 +4,7 @@
 #ifndef DATABASE_HPP
 #define DATABASE_HPP
 
-#include "database_interfaces.hpp"
+#include "../Interface/IDatabase.hpp"
 
 class Database : DatabaseInterface {
     public:
