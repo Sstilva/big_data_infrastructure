@@ -15,6 +15,8 @@ class Database : DatabaseInterface {
         Table makeTable(std::string table_name, std::vector<std::string> column_names, std::vector<int> column_types);
         void loadTable();
         std::vector<Table> getTables();
+
+        void deleteTable(std::string tableName);
     private:
         std::vector<Table> tables;
 };

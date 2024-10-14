@@ -32,6 +32,10 @@ class Column: public IColumn {
         std::string getName();
         int getType() {return column_type;};
         void print_values();
+
+        int getIntValue(int idx);
+        float getFloatValue(int idx);
+        std::string getStringValue(int idx);
     private:
         std::string name;
         int column_type;
