@@ -19,10 +19,16 @@
 int main(void) {
     // Создали БД
     Database a = Database();
+    a.loadDatabase();
     // Создали таблицу в БД
     std::vector<int> column_types = { TableColumnType::STRING, TableColumnType::INTEGER, TableColumnType::FLOAT };
     std::vector<std::string> column_names = { "TestStringColumn", "TestIntColumn", "TestFloatColumn" };
-    Table table = a.makeTable("Hello_World", column_names, column_types);
+    auto table = a.createTable("Hello_World", column_names, column_types);
+    auto table_ = a.createTable("Hello_World_", column_names, column_types);
+    auto table__ = a.createTable("Hello_World_", column_names, column_types);
+    a.deleteTable("Hello_World");
+    a.printTables();
+    a.saveDatabase();
 
     std::string str_to_append = std::string("Hello, world!");
     int int_to_append = 10;
@@ -50,6 +56,6 @@ int main(void) {
     table.add_row(row_pointers2);
 
     std::cout << "Вывожу таблицу: " << std::endl;
-    printTable(table);
+    // printTable(table);
     return 0;
 }
