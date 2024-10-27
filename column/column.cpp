@@ -5,6 +5,9 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <numeric>
+#include <algorithm>
+#include <cmath>
 
 Column::Column(int col_type){
     // Создаем колонку только с указанием типа
@@ -124,4 +127,69 @@ int Column::getSize(){
         default:
             throw;
     }
+}
+
+
+double Column::mean(){
+
+    if(this->column_type == TableColumnType::STRING){
+        throw "Не могу вычислить среднее для нечисловой колонки!";
+    }
+
+    double value_sum = 0.0;    
+    switch(this->column_type){
+        case TableColumnType::INTEGER:
+            for(int i = 0; i < this->int_values.size(); i += 1){
+                value_sum += (double)this->int_values[i];
+            }
+            break;
+        case TableColumnType::FLOAT:
+            value_sum = std::accumulate(this->float_values.begin(), this->float_values.end(), 0.0);
+            break;
+        default:
+            throw;
+    }
+    return value_sum / this->getSize();
+
+}
+
+
+double Column::percentile(double q){
+    /*
+        Найти число, для которого (q*100)% чисел в ряду меньше его.  
+    */
+    if(this->column_type == TableColumnType::STRING){
+        throw "Не могу вычислить среднее для нечисловой колонки!";
+    }
+
+    if(q > 1.0 || q < 0.0){
+        throw "Квантиль должен быть в пределах [0, 1]";
+    }
+
+    std::vector<double> sorted_arr = std::vector<double>(this->getSize());
+    switch(this->column_type){
+        case TableColumnType::INTEGER:
+            for(int i = 0; i < sorted_arr.size(); ++i){
+                sorted_arr[i] = (double)this->int_values[i];
+            }
+            break;
+        case TableColumnType::FLOAT:
+            for(int i = 0; i < sorted_arr.size(); ++i){
+                sorted_arr[i] = (double)this->float_values[i];
+            }
+            break;
+    }
+
+    std::sort(sorted_arr.begin(), sorted_arr.end());
+    long idx = std::roundl((double)sorted_arr.size() * q);
+    
+    double value_at_idx = sorted_arr[idx];
+    sorted_arr = std::vector<double>(); // Чистим память
+
+    return value_at_idx;
+}
+
+
+double Column::median(){
+    return this->percentile(0.5);
 }

@@ -13,7 +13,7 @@ class DatabaseInterface {
         void loadDatabase();
         void saveDatabase();
         void readTable();
-        Table makeTable(std::string table_name, std::vector<std::string> column_names, std::vector<int> column_types);
+        ITable* makeTable(std::string table_name, std::vector<std::string> column_names, std::vector<int> column_types);
         void loadTable();
         std::vector<Table> getTables();
 

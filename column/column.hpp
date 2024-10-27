@@ -36,6 +36,10 @@ class Column: public IColumn {
         int getIntValue(int idx);
         float getFloatValue(int idx);
         std::string getStringValue(int idx);
+
+        double mean();
+        double median();
+        double percentile(double q);
     private:
         std::string name;
         int column_type;

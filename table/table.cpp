@@ -3,6 +3,9 @@
 #include "table.hpp"
 #include "../column/column.hpp"
 #include "../column/column_type_enum.hpp"
+#include <vector>
+#include <algorithm>
+#include <sstream>
 
 Table::Table(std::string table_name, std::vector<std::string> column_names, std::vector<int> column_types){
     std::cout << "Создаю таблицу!" << std::endl;
@@ -22,7 +25,28 @@ Table::Table(){
     std::cout << "Empty table constructed!" << std::endl;
 }
 
+// =================================
+// Получение колонки
+// =================================
+Column Table::getColumn(std::string colName){
+    for(int i = 0; i < this->columnNames.size(); ++i){
+        if(this->columnNames[i] == colName){
+            return this->columns[i];
+        }
+    }
+    std::stringstream msg;
+    msg << "Колонка " << colName << " не найдена в таблице!";
+    throw msg.str();
+}
 
+Column Table::getColumn(char* colName){
+    return this->getColumn(std::string(colName));
+}
+
+
+// =================================
+// Добавление строки 
+// =================================
 void Table::add_row(std::vector<void*> values){
     std::cout << "Получен запрос на добавление строки в таблицу!" << std::endl;
     int column_count = this->columns.size();

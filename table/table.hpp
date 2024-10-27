@@ -23,6 +23,12 @@ class Table: public ITable {
         std::vector<void*> read_row(int row_index);
         void delete_row(int row_index);
 
+        /*
+            Получение колонок
+        */
+        Column getColumn(std::string colName);
+        Column getColumn(char* colName);
+
 };
 
 #endif
