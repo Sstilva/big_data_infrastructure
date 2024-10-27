@@ -11,6 +11,7 @@
 class Table: public ITable {
     public:
         Table();
+        Table(std::string tableName);
         Table(std::string table_name, std::vector<std::string> column_names, std::vector<int> column_types);
         
         std::string name;

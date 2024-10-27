@@ -3,22 +3,38 @@
 */
 #ifndef DATABASE_HPP
 #define DATABASE_HPP
-
+#include <map>
+#include <sys/stat.h>
+#include <filesystem>
+#include <fstream>
 #include "../Interface/IDatabase.hpp"
 
-class Database : DatabaseInterface {
+class Database : IDatabase {
     public:
-        void hello();
+
+        //from interface
         void loadDatabase();
         void saveDatabase();
-        void readTable();
-        Table makeTable(std::string table_name, std::vector<std::string> column_names, std::vector<int> column_types);
-        void loadTable();
-        std::vector<Table> getTables();
+        ITable createTable(std::string tableName);
+        ITable createTable(std::string tableName, std::vector<std::string> columnNames, std::vector<int> columnTypes);
+        ITable getTable(std::string tableName);
+        std::map<std::string, ITable> getTables();
+        
+        // Custom
+        void printTables();
+        void saveTables();
+        void writeTableToDisk(std::string tableName);
+        void loadTable(std::filesystem::path path);
+        void flush();
+
+        // void readTable();
+        // void loadTable();
+        
 
         void deleteTable(std::string tableName);
     private:
-        std::vector<Table> tables;
+        std::map<std::string, ITable> tables;
+        std::string databasePath = "MyDatabase";
 };
 
 #endif

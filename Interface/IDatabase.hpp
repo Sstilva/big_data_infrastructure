@@ -6,20 +6,19 @@
 
 #include <vector>
 #include <string>
-#include "../table/table.hpp"
+#include "./ITable.hpp"
 
-class DatabaseInterface {
+class IDatabase {
+    /*
+    Должен возвращать только интерфейсы таблиц, потому что он манипулирует только таблицами
+    */
     public:
         void loadDatabase();
         void saveDatabase();
-        void readTable();
-        Table makeTable(std::string table_name, std::vector<std::string> column_names, std::vector<int> column_types);
-        void loadTable();
-        std::vector<Table> getTables();
-
+        ITable createTable(std::string& tableName);
+        ITable getTable(std::string& tableName);
+        // std::vector<ITable> getTables();
         void deleteTable(std::string tableName);
-    private:
-        std::vector<Table> tables;
 };
 
 #endif

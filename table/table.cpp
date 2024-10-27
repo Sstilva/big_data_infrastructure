@@ -18,6 +18,10 @@ Table::Table(std::string table_name, std::vector<std::string> column_names, std:
     }
 }
 
+Table::Table(std::string tableName){
+    name = tableName;
+}
+
 Table::Table(){
     std::cout << "Empty table constructed!" << std::endl;
 }
@@ -52,10 +56,10 @@ void Table::add_row(std::vector<void*> values){
 
 }
 
-std::vector<void*> read_row(int row_index){
+std::vector<void*> Table::read_row(int row_index){
 
 }
 
-void delete_row(int row_index){
+void Table::delete_row(int row_index){
 
 }
