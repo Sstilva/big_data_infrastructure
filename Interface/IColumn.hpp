@@ -1,11 +1,12 @@
 #pragma once
 #include <string>
 
+template <class ColumnClass>
 class IColumn {
 public:
-    void add_value(float);
-    void add_value(int);
-    void add_value(std::string);
+    ColumnClass add_value(float);
+    ColumnClass add_value(int);
+    ColumnClass add_value(std::string);
 
     int getIntValue(int idx);
     float getFloatValue(int idx);
@@ -15,4 +16,6 @@ public:
     std::string getName();
     int getType();
     void print_values();
+
+    ColumnClass loadFromBytes(char* byteArray);
 };

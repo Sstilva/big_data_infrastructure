@@ -8,7 +8,7 @@
 #include "../column/column.hpp"
 
 
-class Table: public ITable {
+class Table: public ITable<Table, Column> {
     public:
         Table();
         Table(std::string tableName);
@@ -19,8 +19,9 @@ class Table: public ITable {
         std::vector<int> columnTypes;
         std::vector<Column> columns;
 
+        Column addColumn(std::string colname, int columnType);
         // Функции добавления строк
-        void add_row(std::vector<void*> values);
+        Table add_row(std::vector<void*> values);
         std::vector<void*> read_row(int row_index);
         void delete_row(int row_index);
 

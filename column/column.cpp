@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <cstring>
 
 Column::Column(int col_type){
     // Создаем колонку только с указанием типа
@@ -35,31 +36,31 @@ Column::Column(int col_type, std::string, std::vector<std::string> str_values){
     this->string_values.insert(std::end(this->string_values), std::begin(str_values), std::end(str_values));
 }
 
-void Column::add_value(int val){
+Column Column::add_value(int val){
     if(this->column_type != TableColumnType::INTEGER){
         std::cout << "Не могу добавить int в колонку типа не int!" << std::endl;
         throw std::invalid_argument("Тип колонки и тип значений не совпадают!");
     }
     this->int_values.push_back(val);
+    return *this;
 }
 
-void Column::add_value(float val){
+Column Column::add_value(float val){
     if(this->column_type != TableColumnType::FLOAT){
         std::cout << "Не могу добавить float в колонку типа не float!" << std::endl;
         throw std::invalid_argument("Тип колонки и тип значений не совпадают!");
     }
     this->float_values.push_back(val);
-
+    return *this;
 }
 
-void Column::add_value(std::string val){
+Column Column::add_value(std::string val){
     if(this->column_type != TableColumnType::STRING){
         std::cout << "Не могу добавить строку в колонку типа не строка!" << std::endl;
         throw std::invalid_argument("Тип колонки и тип значений не совпадают!");
     }
-    std::cout << "Размер до: "<< this->string_values.size() << std::endl;
     this->string_values.push_back(val);
-    std::cout << "Размер после: " << this->string_values.size() << std::endl;
+    return *this;
 }
 
 template <typename T>
@@ -113,7 +114,7 @@ std::vector<std::string> Column::getStringRepresentation(){
     return values;
 }
 
-int Column::getSize(){
+const int Column::getSize(){
     switch(this->column_type){
         case TableColumnType::INTEGER:
             return this->int_values.size();
@@ -124,4 +125,126 @@ int Column::getSize(){
         default:
             throw;
     }
+}
+
+const char* Column::getBytesOfValues(int& bytesToWrite){
+    switch(this->column_type){
+        case TableColumnType::INTEGER:
+            {
+                // Получаем байты целых чисел
+                int arraySize = this->int_values.size()*sizeof(int) + sizeof(int);
+                bytesToWrite = arraySize;
+                int* values = (int*)malloc(arraySize);
+                // первые четыре байта - это сколько байт занимают значения колонки
+                *(values + 0) = arraySize - sizeof(int);
+                for(int i = 0; i < this->int_values.size(); ++i){
+                    *(values + i*sizeof(int) + sizeof(int)) = this->int_values[i];
+                }
+                return (const char*)values;
+            }
+        case TableColumnType::FLOAT:
+            {
+                // Получаем байты дробей
+                int arraySize = this->float_values.size()*sizeof(float) + sizeof(int);
+                bytesToWrite = arraySize;
+                float* values = (float*)malloc(arraySize);
+                *(values + 0) = arraySize - sizeof(int);
+                for(int i = 0; i < this->float_values.size(); ++i){
+                    *(values + i*sizeof(float) + sizeof(int)) = this->float_values[i];
+                }
+                return (const char*)values;
+            }
+        case TableColumnType::STRING:
+            {
+                // Получаем байты массива строк
+                // Тут сложнее. Нам нужен массив байт вида:
+                // <4 байта: длинна строки><N байт - байты строки>
+                // Чтобы понять, сколько байт нам выделять надо сложить байтовые
+                // размеры всех строк
+                int totalStringBytes = 0;
+                for(int i = 0; i < this->string_values.size(); ++i){
+                    totalStringBytes += this->string_values[i].size();
+                }
+                // итоговый размер - 4 байта под длинну массива в целом +
+                // 4 байта * кол-во строк под хранение информации о длинне каждой строки
+                // + N байтов под каждую строку
+                int arraySize = totalStringBytes + sizeof(int)*this->string_values.size() + sizeof(int);
+                bytesToWrite = arraySize;
+                char* values = (char*)malloc(arraySize);
+                *(int*)(values + 0) = arraySize;
+                int currentOffset = sizeof(int);
+                for(int i = 0; i < this->string_values.size(); ++i){
+                    int currentStringSize = this->string_values[i].size();
+                    *(int*)(values + currentOffset) = currentStringSize;
+                    currentOffset += sizeof(int);
+                    std::memcpy(values + currentOffset, this->string_values[i].c_str(), currentStringSize);
+                    currentOffset += currentStringSize;
+                }
+                return (const char*)values;
+            }
+        default:
+            throw;
+    }    
+}
+
+Column Column::loadFromBytes(char* byteArray){
+    // Зеркалим загрузку колонки из массива байт
+    switch(this->column_type){
+        case TableColumnType::INTEGER:
+            {
+                // Первые четыре байта - это то, сколько байт в массиве занимают значения колонки
+                int limit = 0; // TODO: continue
+                int arraySize = this->int_values.size()*sizeof(int) + sizeof(int);
+                bytesToWrite = arraySize;
+                int* values = (int*)malloc(arraySize);
+                // первые четыре байта - это сколько байт занимают значения колонки
+                *(values + 0) = arraySize - sizeof(int);
+                for(int i = 0; i < this->int_values.size(); ++i){
+                    *(values + i*sizeof(int) + sizeof(int)) = this->int_values[i];
+                }
+                return (const char*)values;
+            }
+        case TableColumnType::FLOAT:
+            {
+                // Получаем байты дробей
+                int arraySize = this->float_values.size()*sizeof(float) + sizeof(int);
+                bytesToWrite = arraySize;
+                float* values = (float*)malloc(arraySize);
+                *(values + 0) = arraySize - sizeof(int);
+                for(int i = 0; i < this->float_values.size(); ++i){
+                    *(values + i*sizeof(float) + sizeof(int)) = this->float_values[i];
+                }
+                return (const char*)values;
+            }
+        case TableColumnType::STRING:
+            {
+                // Получаем байты массива строк
+                // Тут сложнее. Нам нужен массив байт вида:
+                // <4 байта: длинна строки><N байт - байты строки>
+                // Чтобы понять, сколько байт нам выделять надо сложить байтовые
+                // размеры всех строк
+                int totalStringBytes = 0;
+                for(int i = 0; i < this->string_values.size(); ++i){
+                    totalStringBytes += this->string_values[i].size();
+                }
+                // итоговый размер - 4 байта под длинну массива в целом +
+                // 4 байта * кол-во строк под хранение информации о длинне каждой строки
+                // + N байтов под каждую строку
+                int arraySize = totalStringBytes + sizeof(int)*this->string_values.size() + sizeof(int);
+                bytesToWrite = arraySize;
+                char* values = (char*)malloc(arraySize);
+                *(int*)(values + 0) = arraySize;
+                int currentOffset = sizeof(int);
+                for(int i = 0; i < this->string_values.size(); ++i){
+                    int currentStringSize = this->string_values[i].size();
+                    *(int*)(values + currentOffset) = currentStringSize;
+                    currentOffset += sizeof(int);
+                    std::memcpy(values + currentOffset, this->string_values[i].c_str(), currentStringSize);
+                    currentOffset += currentStringSize;
+                }
+                return (const char*)values;
+            }
+        default:
+            throw;
+    }    
 }

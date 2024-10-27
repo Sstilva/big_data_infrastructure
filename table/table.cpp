@@ -26,8 +26,15 @@ Table::Table(){
     std::cout << "Empty table constructed!" << std::endl;
 }
 
+Column Table::addColumn(std::string colname, int columnType){
+    this->columnNames.push_back(colname);
+    this->columnTypes.push_back(columnType);
+    Column newCol = Column(columnType, colname);
+    this->columns.push_back(newCol);
+    return newCol;
+}
 
-void Table::add_row(std::vector<void*> values){
+Table Table::add_row(std::vector<void*> values){
     std::cout << "Получен запрос на добавление строки в таблицу!" << std::endl;
     int column_count = this->columns.size();
     std::cout << "Число колонок: " << column_count << std::endl;
@@ -54,10 +61,12 @@ void Table::add_row(std::vector<void*> values){
         }
     }
 
+    return *this;
 }
 
 std::vector<void*> Table::read_row(int row_index){
-
+    std::vector<void*> row;
+    return row;
 }
 
 void Table::delete_row(int row_index){

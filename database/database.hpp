@@ -7,20 +7,23 @@
 #include <sys/stat.h>
 #include <filesystem>
 #include <fstream>
-#include "../Interface/IDatabase.hpp"
+#include "../table/table.hpp"
 
-class Database : IDatabase {
+class Database : public IDatabase<Table> {
     public:
-
+        Database();
         //from interface
         void loadDatabase();
         void saveDatabase();
-        ITable createTable(std::string tableName);
-        ITable createTable(std::string tableName, std::vector<std::string> columnNames, std::vector<int> columnTypes);
-        ITable getTable(std::string tableName);
-        std::map<std::string, ITable> getTables();
+        Table createTable(std::string tableName);
+        Table createTable(std::string tableName, std::vector<std::string> columnNames, std::vector<int> columnTypes);
+        Table getTable(std::string tableName);
+        std::map<std::string, Table> getTables();
         
-        // Custom
+        // Диск
+        int writeToDisk(std::string savePath);
+        void loadFromDisk(std::string loadPath);
+
         void printTables();
         void saveTables();
         void writeTableToDisk(std::string tableName);
@@ -33,7 +36,7 @@ class Database : IDatabase {
 
         void deleteTable(std::string tableName);
     private:
-        std::map<std::string, ITable> tables;
+        std::map<std::string, Table> tables;
         std::string databasePath = "MyDatabase";
 };
 

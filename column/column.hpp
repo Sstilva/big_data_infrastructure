@@ -6,7 +6,7 @@
 #include <vector>
 #include "../Interface/IColumn.hpp"
 
-class Column: public IColumn {
+class Column: public IColumn<Column> {
     public:
         Column(int col_type);
         Column(int col_type, std::string col_name);
@@ -15,9 +15,9 @@ class Column: public IColumn {
         /*
             Добавление значений в колонку
         */
-       void add_value(float);
-       void add_value(int);
-       void add_value(std::string);
+       Column add_value(float);
+       Column add_value(int);
+       Column add_value(std::string);
 
        /*
             Ввод-вывод
@@ -27,7 +27,7 @@ class Column: public IColumn {
         /*
             Информация о структуре
         */
-        int getSize();
+        const int getSize();
 
         std::string getName();
         int getType() {return column_type;};
@@ -36,6 +36,10 @@ class Column: public IColumn {
         int getIntValue(int idx);
         float getFloatValue(int idx);
         std::string getStringValue(int idx);
+
+        const char* getBytesOfValues(int& bytesToWrite);
+        Column loadFromBytes(char* byteArray);
+
     private:
         std::string name;
         int column_type;

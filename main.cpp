@@ -26,9 +26,6 @@ int main(void) {
     auto table = a.createTable("Hello_World", column_names, column_types);
     auto table_ = a.createTable("Hello_World_", column_names, column_types);
     auto table__ = a.createTable("Hello_World_", column_names, column_types);
-    a.deleteTable("Hello_World");
-    a.printTables();
-    a.saveDatabase();
 
     std::string str_to_append = std::string("Hello, world!");
     int int_to_append = 10;
@@ -56,6 +53,10 @@ int main(void) {
     table.add_row(row_pointers2);
 
     std::cout << "Вывожу таблицу: " << std::endl;
-    // printTable(table);
+    printTable(table);
+    a.writeToDisk("db_dump.bin");
+
+    Database b = Database();
+    b.loadFromDisk("db_dump.bin");
     return 0;
 }
